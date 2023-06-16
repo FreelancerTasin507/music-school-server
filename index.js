@@ -10,6 +10,8 @@ const cors = require("cors");
 app.use(cors());
 app.use(express.json());
 
+// --
+
 const verifyJWT = (req, res, next) => {
   const authorization = req.headers.authorization;
   if (!authorization) {
