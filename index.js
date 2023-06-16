@@ -64,9 +64,7 @@ async function run() {
       .db("PaymentsDB")
       .collection("paymentCollection");
 
-    const instructorClassCollection = client
-      .db("instructorClass")
-      .collection("instructorClassCollection");
+   
 
     app.post("/jwt", (req, res) => {
       const user = req.body;
@@ -89,6 +87,37 @@ async function run() {
       console.log("result", result);
       res.send(result);
     });
+
+    app.patch('/classes/:id', async (req , res)=>{
+        const id = req.params.id;
+        const filter = { _id : new ObjectId(id)};
+        const updateDoc = {
+            $set: {},
+        };
+         
+        if ( req.body.status){
+            updateDoc.$set.status = req.body.status
+        }
+        const result = await classCollection.updateOne(filter, updateDoc);
+
+        res.send(result);
+    })
+
+    app.post("/classes", async (req, res) => {
+      const newItem = req.body;
+      const result = await classCollection.insertOne(newItem);
+      res.send(result);
+    });
+      
+    app.delete('/classes/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await classCollection.deleteOne(query);
+      res.send(result);
+    })
+
+
+
     app.get("/instractors", async (req, res) => {
       const result = await instractorsCollection.find().toArray();
       res.send(result);
@@ -194,16 +223,7 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/students/instructors", async (req, res) => {
-      const result = await instructorClassCollection.find().toArray();
-      res.send(result);
-    });
-
-    app.post("/students/instructors", async (req, res) => {
-      const newItem = req.body;
-      const result = await instructorClassCollection.insertOne(newItem);
-      res.send(result);
-    });
+   
 
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
